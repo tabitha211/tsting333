@@ -9,11 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Theos
-        uses: kabiroberai/theos-action@v2
-        with:
-          sdk-version: '16.5'
-          theos-src: 'https://github.com/theos/theos'
+      - name: Install Theos
+        uses: Randomblock1/theos-action@v1
 
       - name: Build dylib
         run: make
@@ -22,4 +19,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: FBFix-dylib
-          path: .theos/obj/FBFix.dylib
+          path: .theos/obj/**/*.dylib
