@@ -6,25 +6,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      THEOS: ${{ github.workspace }}/theos
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Theos
-        uses: actions/checkout@v4
-        with:
-          repository: theos/theos
-          path: theos
-          submodules: recursive
-
-      - name: Download iOS SDK
+      - name: Install Theos
         run: |
-          curl -LO https://github.com/theos/sdks/releases/download/2024-10-03/iPhoneOS16.5.sdk.tar.xz
-          mkdir -p theos/sdks
-          tar xf iPhoneOS16.5.sdk.tar.xz -C theos/sdks/
+          git clone --recursive https://github.com/theos/theos.git $THEOS
+
+      - name: Install iOS SDK
+        run: |
+          git clone --depth=1 https://github.com/theos/sdks.git /tmp/theos-sdks
+          cp -r /tmp/theos-sdks/iPhoneOS16.5.sdk $THEOS/sdks/
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install -y clang llvm
 
       - name: Build dylib
-        env:
-          THEOS: ${{ github.workspace }}/theos
         run: make
 
       - name: Upload dylib
